@@ -1,0 +1,41 @@
+TXT2PDF
+
+# Function to convert text files in a directory to PDF using wkhtmltopdf
+function ConvertToPdf {
+    param (
+        [string]$inputDirectory,
+        [string]$outputDirectory
+    )
+
+    # Check if the input directory exists
+    if (-not (Test-Path $inputDirectory -PathType Container)) {
+        Write-Host "Error: Input directory does not exist."
+        return
+    }
+
+    # Get all text files in the input directory
+    $textFiles = Get-ChildItem -Path $inputDirectory -Filter *.txt
+
+    # Check if there are any text files in the directory
+    if ($textFiles.Count -eq 0) {
+        Write-Host "Error: No text files found in the specified directory."
+        return
+    }
+
+    # Specify the full path to wkhtmltopdf.exe
+    $wkhtmltopdfPath = "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+
+    # Loop through each text file and convert to PDF
+    foreach ($textFile in $textFiles) {
+        $outputFilePath = Join-Path -Path $outputDirectory -ChildPath "$($textFile.BaseName).pdf"
+
+        # Use wkhtmltopdf to convert text file to PDF
+        & $wkhtmltopdfPath $textFile.FullName $outputFilePath
+    }
+}
+
+# Example usage
+$inputDirectory = "C:\Users\bigga\OneDrive\Desktop\test"
+$outputDirectory = "C:\Users\bigga\OneDrive\Desktop\test\Output"
+
+ConvertToPdf -inputDirectory $inputDirectory -outputDirectory $outputDirectory
